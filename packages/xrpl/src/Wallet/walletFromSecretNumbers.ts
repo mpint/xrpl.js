@@ -21,7 +21,16 @@ export function walletFromSecretNumbers(
   secretNumbers: string[] | string,
   opts?: { masterAddress?: string; algorithm?: ECDSA },
 ): Wallet {
-  const secret = new Account(secretNumbers).getFamilySeed()
+  let secret: string
+  try {
+    secret = new Account(secretNumbers).getFamilySeed()
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw error
+    }
+    throw new Error('Unable to derive private key from secret numbers')
+  }
+
   const updatedOpts: { masterAddress?: string; algorithm?: ECDSA } = {
     masterAddress: undefined,
     algorithm: undefined,
