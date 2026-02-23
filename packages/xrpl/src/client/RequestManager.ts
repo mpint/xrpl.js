@@ -110,7 +110,7 @@ export default class RequestManager {
    * hung responses, and a promise that will resolve with the response once
    * the response is seen & handled.
    *
-   * @param request - Request to create.
+   * @param req - Request to create.
    * @param timeout - Timeout length to catch hung responses.
    * @returns Request ID, new request form, and the promise for resolving the request.
    * @throws XrplError if request with the same ID is already pending.
@@ -118,22 +118,23 @@ export default class RequestManager {
   public createRequest<
     R extends BaseRequest,
     T = RequestResponseMap<R, APIVersion>,
-  >(request: R, timeout: number): [string | number, string, Promise<T>] {
+  >(req: R, timeout: number): [string | number, string, Promise<T>] {
     let newId: string | number
-    if (request.id == null) {
+    if (req.id == null) {
       newId = this.nextId
       this.nextId += 1
     } else {
-      newId = request.id
+      newId = req.id
     }
-    const newRequest = JSON.stringify({ ...request, id: newId })
+    const requestWithId: R = { ...req, id: newId }
+    const newRequest = JSON.stringify(requestWithId)
     // Typing required for Jest running in browser
     const timer: ReturnType<typeof setTimeout> = setTimeout(() => {
       this.reject(
         newId,
         new TimeoutError(
-          `Timeout for request: ${JSON.stringify(request)} with id ${newId}`,
-          request,
+          `Timeout for request: ${JSON.stringify(req)} with id ${newId}`,
+          req,
         ),
       )
     }, timeout)
@@ -152,10 +153,7 @@ export default class RequestManager {
     }
     if (this.promisesAwaitingResponse.has(newId)) {
       clearTimeout(timer)
-      throw new XrplError(
-        `Response with id '${newId}' is already pending`,
-        request,
-      )
+      throw new XrplError(`Response with id '${newId}' is already pending`, req)
     }
     const newPromise = new Promise<T>((resolve, reject) => {
       this.promisesAwaitingResponse.set(newId, {

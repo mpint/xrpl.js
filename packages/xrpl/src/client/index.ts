@@ -342,14 +342,20 @@ class Client extends EventEmitter<EventTypes> {
     V extends APIVersion = typeof DEFAULT_API_VERSION,
     T = RequestResponseMap<R, V>,
   >(req: R): Promise<T> {
+    // Check if request has an account property and ensure it's a classic address
+    const accountValue = 'account' in req ? req.account : undefined
+    const normalizedAccount =
+      typeof accountValue === 'string'
+        ? ensureClassicAddress(accountValue)
+        : undefined
+
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Necessary to preserve request type
     const request = {
       ...req,
-      account:
-        typeof req.account === 'string'
-          ? ensureClassicAddress(req.account)
-          : undefined,
+      account: normalizedAccount,
       api_version: req.api_version ?? this.apiVersion,
-    }
+    } as R
+
     const response = await this.connection.request<R, T>(request)
 
     // mutates `response` to add warnings
@@ -391,7 +397,8 @@ class Client extends EventEmitter<EventTypes> {
         new NotFoundError('response does not have a next page'),
       )
     }
-    const nextPageRequest = { ...req, marker: resp.result.marker }
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Necessary to preserve request type
+    const nextPageRequest = { ...req, marker: resp.result.marker } as T
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- Necessary for overloading
     return this.request(nextPageRequest) as unknown as U
   }
