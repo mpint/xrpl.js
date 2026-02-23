@@ -1,0 +1,13 @@
+{
+  "path": "packages/xrpl/src/models/methods/index.ts",
+  "tsconfig": "packages/xrpl/tsconfig.json",
+  "type": "*",
+  "expose": "export",
+  "topRef": false,
+  "jsDoc": "extended",
+  "skipTypeCheck": true,
+  "extraTags": ["category"],
+  "additionalProperties": false,
+  "strictNullChecks": true,
+  "encodeRefs": false
+}
