@@ -340,6 +340,38 @@
         }
       }
     },
+    "/ledger": {
+      "post": {
+        "summary": "Get info about a ledger version",
+        "description": "Get info about a ledger version\n\nDocumentation: https://xrpl.org/docs/references/http-websocket-apis/public-api-methods/ledger-methods/ledger.md",
+        "operationId": "ledger",
+        "tags": [
+          "Ledger Methods"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LedgerRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LedgerResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/ledger_closed": {
       "post": {
         "summary": "Get the latest closed ledger version",
@@ -436,6 +468,38 @@
         }
       }
     },
+    "/ledger_entry": {
+      "post": {
+        "summary": "Get one element from a ledger version",
+        "description": "Get one element from a ledger version\n\nDocumentation: https://xrpl.org/docs/references/http-websocket-apis/public-api-methods/ledger-methods/ledger_entry.md",
+        "operationId": "ledger_entry",
+        "tags": [
+          "Ledger Methods"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LedgerEntryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LedgerEntryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/submit": {
       "post": {
         "summary": "Send a transaction to the network",
@@ -468,6 +532,38 @@
         }
       }
     },
+    "/submit_multisigned": {
+      "post": {
+        "summary": "Send a multi-signed transaction to the network",
+        "description": "Send a multi-signed transaction to the network\n\nDocumentation: https://xrpl.org/docs/references/http-websocket-apis/public-api-methods/transaction-methods/submit_multisigned.md",
+        "operationId": "submit_multisigned",
+        "tags": [
+          "Transaction Methods"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitMultisignedRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubmitMultisignedResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/transaction_entry": {
       "post": {
         "summary": "Retrieve info about a transaction from a particular ledger version",
@@ -493,6 +589,70 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TransactionEntryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tx": {
+      "post": {
+        "summary": "Retrieve info about a transaction from all the ledgers on hand",
+        "description": "Retrieve info about a transaction from all the ledgers on hand\n\nDocumentation: https://xrpl.org/docs/references/http-websocket-apis/public-api-methods/transaction-methods/tx.md",
+        "operationId": "tx",
+        "tags": [
+          "Transaction Methods"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TxRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TxResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/simulate": {
+      "post": {
+        "summary": "Simulate a transaction",
+        "description": "Simulate a transaction\n\nDocumentation: https://xrpl.org/docs/references/http-websocket-apis/public-api-methods/transaction-methods/simulate.md",
+        "operationId": "simulate",
+        "tags": [
+          "Transaction Methods"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimulateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimulateResponse"
                 }
               }
             }
@@ -2551,7 +2711,8 @@
           {
             "$ref": "#/components/schemas/TransactionMetadataBase"
           }
-        ]
+        ],
+        "description": "Union type of all transaction metadata types for schema generation compatibility."
       },
       "PaymentMetadata": {
         "type": "object",
@@ -4092,6 +4253,148 @@
         "additionalProperties": false,
         "description": "Retrieve information about the public ledger. Expects a response in the form of a  {@link  LedgerResponse } ."
       },
+      "LedgerQueueData": {
+        "type": "object",
+        "properties": {},
+        "required": [
+          "account",
+          "tx",
+          "retries_remaining",
+          "preflight_result"
+        ],
+        "additionalProperties": false
+      },
+      "TransactionAndMetadata": {
+        "type": "object",
+        "properties": {},
+        "required": [
+          "transaction",
+          "metadata"
+        ],
+        "additionalProperties": false
+      },
+      "Transaction": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/SubmittableTransaction"
+          },
+          {
+            "$ref": "#/components/schemas/PseudoTransaction"
+          }
+        ],
+        "description": "All transactions that can live on the XRPL"
+      },
+      "PseudoTransaction": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/EnableAmendment"
+          },
+          {
+            "$ref": "#/components/schemas/SetFee"
+          },
+          {
+            "$ref": "#/components/schemas/UNLModify"
+          }
+        ],
+        "description": "Transactions that can only be created by validators."
+      },
+      "EnableAmendment": {
+        "type": "object",
+        "properties": {},
+        "required": [
+          "Account",
+          "Amendment",
+          "LedgerSequence",
+          "TransactionType"
+        ],
+        "description": "Mark a change in the status of a proposed amendment when it gains majority, looses majority, or is enabled."
+      },
+      "SetFee": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {},
+            "required": [
+              "Account",
+              "BaseFee",
+              "ReferenceFeeUnits",
+              "ReserveBase",
+              "ReserveIncrement",
+              "TransactionType"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {},
+            "required": [
+              "Account",
+              "BaseFeeDrops",
+              "ReserveBaseDrops",
+              "ReserveIncrementDrops",
+              "TransactionType"
+            ]
+          }
+        ],
+        "description": "Marks a change in transaction cost or reserve requirements as a result of Fee Voting.\n\nThe output will be based on the status of the `XRPFees` amendment at the time of this transaction.\n- Before:  {@link  SetFeePostAmendment } \n- After:  {@link  SetFeePostAmendment }"
+      },
+      "UNLModify": {
+        "type": "object",
+        "properties": {},
+        "required": [
+          "Account",
+          "LedgerSequence",
+          "TransactionType",
+          "UNLModifyDisabling",
+          "UNLModifyValidator"
+        ],
+        "description": "Mark a change to the Negative UNL."
+      },
+      "LedgerModifiedOfferCreateTransaction": {
+        "type": "object",
+        "properties": {},
+        "required": [
+          "transaction",
+          "metadata"
+        ],
+        "additionalProperties": false,
+        "description": "Special case transaction definition when the request contains `owner_funds: true`."
+      },
+      "LedgerBinary": {
+        "type": "object",
+        "properties": {},
+        "required": [
+          "account_hash",
+          "close_flags",
+          "close_time",
+          "close_time_human",
+          "close_time_resolution",
+          "close_time_iso",
+          "closed",
+          "ledger_hash",
+          "ledger_index",
+          "parent_close_time",
+          "parent_hash",
+          "total_coins",
+          "transaction_hash"
+        ],
+        "additionalProperties": false,
+        "description": "Ledger data in binary format (API v2). Similar to Ledger but with transactions and accountState as hex strings."
+      },
+      "LedgerResponse": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "result",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Response expected from a  {@link  LedgerRequest } . This is the default request response, triggered when `expand` and `binary` are both false."
+      },
       "LedgerClosedRequest": {
         "type": "object",
         "properties": {
@@ -4941,6 +5244,44 @@
         "additionalProperties": false,
         "description": "The `ledger_entry` method returns a single ledger object from the XRP Ledger in its raw format. Expects a response in the form of a  {@link  * LedgerEntryResponse } ."
       },
+      "Amendments": {
+        "type": "object",
+        "properties": {},
+        "required": [
+          "Flags",
+          "LedgerEntryType",
+          "index"
+        ],
+        "additionalProperties": false,
+        "description": "The Amendments object type contains a list of Amendments that are currently active."
+      },
+      "LedgerHashes": {
+        "type": "object",
+        "properties": {},
+        "required": [
+          "Flags",
+          "Hashes",
+          "LedgerEntryType",
+          "index"
+        ],
+        "additionalProperties": false,
+        "description": "The LedgerHashes objects exist to make it possible to look up a previous ledger's hash with only the current ledger version and at most one lookup of a previous ledger version."
+      },
+      "LedgerEntryResponse": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "result",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Response expected from a  {@link  LedgerEntryRequest } ."
+      },
       "SubmitRequest": {
         "type": "object",
         "properties": {
@@ -4993,6 +5334,59 @@
         ],
         "additionalProperties": false,
         "description": "Response expected from a  {@link  SubmitRequest } ."
+      },
+      "SubmitMultisignedRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "A unique value to identify this request. The response to this request uses the same id field. This way, even if responses arrive out of order, you know which request prompted which response."
+          },
+          "command": {
+            "type": "string",
+            "description": "The name of the API method."
+          },
+          "api_version": {
+            "type": "number",
+            "description": "The API version to use. If omitted, use version 1."
+          },
+          "tx_json": {
+            "$ref": "#/components/schemas/Transaction",
+            "description": "[object Object],[object Object],[object Object]"
+          },
+          "fail_hard": {
+            "type": "boolean",
+            "description": "If true, and the transaction fails locally, do not retry or relay the\ntransaction to other servers."
+          }
+        },
+        "required": [
+          "command",
+          "tx_json"
+        ],
+        "additionalProperties": false,
+        "description": "The `submit_multisigned` command applies a multi-signed transaction and sends it to the network to be included in future ledgers. Expects a response in the form of a  {@link  SubmitMultisignedRequest } ."
+      },
+      "SubmitMultisignedResponse": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "result",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Response expected from a  {@link  SubmitMultisignedRequest } ."
       },
       "TransactionEntryRequest": {
         "type": "object",
@@ -5106,6 +5500,101 @@
         ],
         "additionalProperties": false,
         "description": "The tx method retrieves information on a single transaction, by its identifying hash. Expects a response in the form of a  {@link  TxResponse } ."
+      },
+      "TxResponse": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "result",
+          "type"
+        ],
+        "additionalProperties": false,
+        "description": "Response expected from a  {@link  TxRequest } ."
+      },
+      "SimulateRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "A unique value to identify this request. The response to this request uses the same id field. This way, even if responses arrive out of order, you know which request prompted which response."
+          },
+          "command": {
+            "type": "string",
+            "description": "The name of the API method."
+          },
+          "api_version": {
+            "type": "number",
+            "description": "The API version to use. If omitted, use version 1."
+          },
+          "binary": {
+            "type": "boolean",
+            "description": "If true, return transaction data in binary format."
+          },
+          "tx_blob": {
+            "type": "string",
+            "description": "The transaction in binary (hex) format.\nMutually exclusive with `tx_json` - provide exactly one."
+          },
+          "tx_json": {
+            "$ref": "#/components/schemas/Transaction",
+            "description": "The transaction in JSON format.\nMutually exclusive with `tx_blob` - provide exactly one."
+          }
+        },
+        "required": [
+          "command"
+        ],
+        "additionalProperties": false,
+        "description": "The `simulate` method simulates a transaction without submitting it to the network. Returns a  {@link  SimulateResponse } .\n\n**Note**: Exactly one of `tx_blob` or `tx_json` must be provided. Providing both or neither will result in an error."
+      },
+      "SimulateJsonResponse": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "result",
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      "SimulateBinaryResponse": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "result",
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      "SimulateResponse": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/SimulateJsonResponse"
+          },
+          {
+            "$ref": "#/components/schemas/SimulateBinaryResponse"
+          }
+        ],
+        "description": "Response expected from an  {@link  SimulateRequest } ."
       },
       "AMMInfoRequest": {
         "type": "object",

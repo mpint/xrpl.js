@@ -469,16 +469,24 @@ function createMethodPath(
 }
 
 /**
- * Main generation function
+ * Create a fresh schema generator
+ * Note: ts-json-schema-generator has a caching bug where using the same generator
+ * instance for multiple types can cause "missing definition" errors.
+ * Creating a fresh generator for each type avoids this issue.
  */
-async function generateOpenAPISchema(): Promise<void> {
-  console.log("🚀 Starting OpenAPI schema generation for XRPL API v2...\n");
-
-  // Create schema generator
+function createFreshGenerator(): TJS.SchemaGenerator {
   const generator = TJS.createGenerator(config);
   if (!generator) {
     throw new Error("Failed to create schema generator");
   }
+  return generator;
+}
+
+/**
+ * Main generation function
+ */
+async function generateOpenAPISchema(): Promise<void> {
+  console.log("🚀 Starting OpenAPI schema generation for XRPL API v2...\n");
 
   // Initialize OpenAPI schema
   const openapi: OpenAPISchema = {
@@ -518,12 +526,15 @@ async function generateOpenAPISchema(): Promise<void> {
   const failedMethods: string[] = [];
 
   // Generate schemas for each method
+  // Note: We create a fresh generator for each type to avoid ts-json-schema-generator
+  // caching bugs that cause "missing definition" errors when reusing the same generator.
   for (const method of methods) {
     console.log(`Processing ${method.command}...`);
 
-    // Generate request schema
+    // Generate request schema with a fresh generator
+    const requestGenerator = createFreshGenerator();
     const requestSchema = generateSchemaForType(
-      generator,
+      requestGenerator,
       method.requestType,
       openapi.components.schemas,
     );
@@ -531,9 +542,10 @@ async function generateOpenAPISchema(): Promise<void> {
       openapi.components.schemas[method.requestType] = requestSchema;
     }
 
-    // Generate response schema (v2 only)
+    // Generate response schema with a fresh generator
+    const responseGenerator = createFreshGenerator();
     const responseSchema = generateSchemaForType(
-      generator,
+      responseGenerator,
       method.responseType,
       openapi.components.schemas,
     );

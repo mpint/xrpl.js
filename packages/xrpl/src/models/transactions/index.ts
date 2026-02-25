@@ -11,7 +11,17 @@ export {
   TransactionAndMetadata,
   Transaction,
 } from './transaction'
-export * from './metadata'
+export {
+  CreatedNode,
+  ModifiedNode,
+  DeletedNode,
+  Node,
+  TransactionMetadataBase,
+  TransactionMetadata,
+  // Note: TransactionMetadataFor is intentionally not exported here
+  // as it's a conditional type that causes issues with schema generation.
+  // Import it directly from './metadata' if needed for internal typed usage.
+} from './metadata'
 export {
   AccountSetAsfFlags,
   AccountSetTfFlags,
