@@ -121,9 +121,26 @@ function transformToOpenAPI(schema: any): any {
       key === "required"
     ) {
       result[key] = schema[key];
+    } else if (key === "properties") {
+      // 'properties' is a dictionary of property name -> schema
+      // Transform each property schema individually
+      const transformedProperties: Record<string, any> = {};
+      for (const [propName, propSchema] of Object.entries(schema.properties)) {
+        transformedProperties[propName] = transformToOpenAPI(propSchema);
+      }
+      result.properties = transformedProperties;
+    } else if (key === "items") {
+      // Handle 'items' specially for tuple arrays
+      // In JSON Schema, tuple arrays have items as an array: [schema1, schema2, ...]
+      // OpenAPI 3.0 doesn't support tuple arrays, so convert to anyOf
+      if (Array.isArray(schema.items)) {
+        // Tuple array - convert to items with anyOf of all possible types
+        const tupleSchemas = schema.items.map(transformToOpenAPI);
+        result.items = { anyOf: tupleSchemas };
+      } else {
+        result.items = transformToOpenAPI(schema.items);
+      }
     } else if (
-      key === "properties" ||
-      key === "items" ||
       key === "anyOf" ||
       key === "oneOf" ||
       key === "allOf" ||
