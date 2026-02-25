@@ -1,5 +1,5 @@
 import { APIVersion, DEFAULT_API_VERSION, RIPPLED_API_V1 } from '../common'
-import { Ledger, LedgerV1, LedgerVersionMap } from '../ledger/Ledger'
+import { LedgerVersionMap } from '../ledger/Ledger'
 import { LedgerEntryFilter } from '../ledger/LedgerEntry'
 import { Transaction, TransactionAndMetadata } from '../transactions'
 import { TransactionMetadata } from '../transactions/metadata'
@@ -144,7 +144,7 @@ export interface LedgerRequestExpandedAccountsOnly extends LedgerRequest {
  *
  * @category Requests
  */
-// eslint-disable-next-line max-len -- Disable for interface declaration.
+// eslint-disable-next-line max-len -- interface declaration with extends
 export interface LedgerRequestExpandedAccountsAndTransactions extends LedgerRequest {
   expand: true
   accounts: true
@@ -202,19 +202,124 @@ export interface LedgerQueueData {
   max_spend_drops?: string
 }
 
-export interface LedgerBinary extends Omit<
-  Ledger,
-  'transactions' | 'accountState'
-> {
+/**
+ * Ledger data in binary format (API v2).
+ * Similar to Ledger but with transactions and accountState as hex strings.
+ */
+export interface LedgerBinary {
+  /** The SHA-512Half of this ledger's state tree information. */
+  account_hash: string
+  /** All the state information in this ledger as hex strings. Admin only. */
   accountState?: string[]
+  /** A bit-map of flags relating to the closing of this ledger. */
+  close_flags: number
+  /**
+   * The approximate time this ledger version closed, as the number of seconds
+   * since the Ripple Epoch of 2000-01-01 00:00:00. This value is rounded based
+   * on the close_time_resolution.
+   */
+  close_time: number
+  /**
+   * The approximate time this ledger was closed, in human-readable format.
+   * Always uses the UTC time zone.
+   */
+  close_time_human: string
+  /**
+   * An integer in the range [2,120] indicating the maximum number of seconds
+   * by which the close_time could be rounded.
+   */
+  close_time_resolution: number
+  /**
+   * The approximate time this ledger was closed, in date time string format.
+   * Always uses the UTC time zone.
+   */
+  close_time_iso: string
+  /** Whether or not this ledger has been closed. */
+  closed: boolean
+  /**
+   * The SHA-512Half of this ledger version. This serves as a unique identifier
+   * for this ledger and all its contents.
+   */
+  ledger_hash: string
+  /**
+   * The ledger index of the ledger. Represented as a number.
+   */
+  ledger_index: number
+  /** The approximate time at which the previous ledger was closed. */
+  parent_close_time: number
+  /**
+   * Unique identifying hash of the ledger that came immediately before this
+   * one.
+   */
+  parent_hash: string
+  /** Total number of XRP drops in the network, as a quoted integer. */
+  total_coins: string
+  /** Hash of the transaction information included in this ledger, as hex. */
+  transaction_hash: string
+  /**
+   * Transactions applied in this ledger version as hex strings.
+   */
   transactions?: string[]
 }
 
-export interface LedgerBinaryV1 extends Omit<
-  LedgerV1,
-  'transactions' | 'accountState'
-> {
+/**
+ * Ledger data in binary format (API v1).
+ * Similar to LedgerV1 but with transactions and accountState as hex strings.
+ */
+export interface LedgerBinaryV1 {
+  /** The SHA-512Half of this ledger's state tree information. */
+  account_hash: string
+  /** All the state information in this ledger as hex strings. Admin only. */
   accountState?: string[]
+  /** A bit-map of flags relating to the closing of this ledger. */
+  close_flags: number
+  /**
+   * The approximate time this ledger version closed, as the number of seconds
+   * since the Ripple Epoch of 2000-01-01 00:00:00. This value is rounded based
+   * on the close_time_resolution.
+   */
+  close_time: number
+  /**
+   * The approximate time this ledger was closed, in human-readable format.
+   * Always uses the UTC time zone.
+   */
+  close_time_human: string
+  /**
+   * An integer in the range [2,120] indicating the maximum number of seconds
+   * by which the close_time could be rounded.
+   */
+  close_time_resolution: number
+  /**
+   * The approximate time this ledger was closed, in date time string format.
+   * Always uses the UTC time zone.
+   */
+  close_time_iso: string
+  /** Whether or not this ledger has been closed. */
+  closed: boolean
+  /**
+   * The SHA-512Half of this ledger version. This serves as a unique identifier
+   * for this ledger and all its contents.
+   */
+  ledger_hash: string
+  /**
+   * The ledger index of the ledger. Some API methods display this as a quoted
+   * integer; some display it as a number.
+   */
+  ledger_index: string
+  /** The approximate time at which the previous ledger was closed. */
+  parent_close_time: number
+  /**
+   * Unique identifying hash of the ledger that came immediately before this
+   * one.
+   */
+  parent_hash: string
+  /** Total number of XRP drops in the network, as a quoted integer. */
+  total_coins: string
+  /** Hash of the transaction information included in this ledger, as hex. */
+  transaction_hash: string
+  /**
+   * Transactions applied in this ledger version as hex strings.
+   */
   transactions?: string[]
 }
 

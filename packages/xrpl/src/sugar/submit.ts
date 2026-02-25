@@ -8,7 +8,7 @@ import type {
 } from '..'
 import { ValidationError, XrplError } from '../errors'
 import { Signer } from '../models/common'
-import { TxResponse } from '../models/methods'
+import { TypedTxResponse } from '../models/methods'
 import { BaseTransaction } from '../models/transactions/common'
 import { decode, encode } from '../utils'
 
@@ -115,7 +115,7 @@ export async function waitForFinalTransactionOutcome<
   txHash: string,
   lastLedger: number,
   submissionResult: string,
-): Promise<TxResponse<T>> {
+): Promise<TypedTxResponse<T>> {
   await sleep(LEDGER_CLOSE_TIME)
 
   const latestLedger = await client.getLedgerIndex()
@@ -153,8 +153,9 @@ export async function waitForFinalTransactionOutcome<
 
   if (txResponse.result.validated) {
     // TODO: resolve the type assertion below
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- we know that txResponse is of type TxResponse
-    return txResponse as TxResponse<T>
+    /* eslint-disable-next-line @typescript-eslint/consistent-type-assertions --
+     * we know that txResponse is of type TypedTxResponse */
+    return txResponse as TypedTxResponse<T>
   }
 
   return waitForFinalTransactionOutcome<T>(

@@ -235,7 +235,7 @@ export interface LedgerEntryRequest extends BaseRequest, LookupByLedgerRequest {
  *
  * @category Responses
  */
-export interface LedgerEntryResponse<T = LedgerEntry> extends BaseResponse {
+export interface LedgerEntryResponse extends BaseResponse {
   result: {
     /** The unique ID of this ledger object. */
     index: string
@@ -245,7 +245,7 @@ export interface LedgerEntryResponse<T = LedgerEntry> extends BaseResponse {
      * Object containing the data of this ledger object, according to the
      * ledger format.
      */
-    node?: T
+    node?: LedgerEntry
     /** The binary representation of the ledger object, as hexadecimal. */
     node_binary?: string
     validated?: boolean
@@ -254,4 +254,20 @@ export interface LedgerEntryResponse<T = LedgerEntry> extends BaseResponse {
      */
     deleted_ledger_index?: number
   }
+}
+
+/**
+ * Utility type for typed ledger entry responses when you know the specific ledger entry type.
+ *
+ * @example
+ * ```ts
+ * const response = await client.request({ command: 'ledger_entry', ... })
+ * const typedResponse = response as TypedLedgerEntryResponse<AccountRoot>
+ * ```
+ */
+export type TypedLedgerEntryResponse<T extends LedgerEntry> = Omit<
+  LedgerEntryResponse,
+  'result'
+> & {
+  result: Omit<LedgerEntryResponse['result'], 'node'> & { node?: T }
 }

@@ -26,36 +26,29 @@ export interface SubmitMultisignedRequest extends BaseRequest {
 }
 
 /**
- * Common properties for multisigned transaction responses.
- *
- * @category Responses
- */
-interface BaseSubmitMultisignedResult {
-  /**
-   * Code indicating the preliminary result of the transaction, for example.
-   * `tesSUCCESS`.
-   */
-  engine_result: string
-  /**
-   * Numeric code indicating the preliminary result of the transaction,
-   * directly correlated to `engine_result`.
-   */
-  engine_result_code: number
-  /** Human-readable explanation of the preliminary transaction result. */
-  engine_result_message: string
-  /** The complete transaction in hex string format. */
-  tx_blob: string
-  /** The complete transaction in JSON format. */
-  tx_json: Transaction
-}
-
-/**
  * Response expected from a {@link SubmitMultisignedRequest}.
  *
  * @category Responses
  */
 export interface SubmitMultisignedResponse extends BaseResponse {
-  result: BaseSubmitMultisignedResult & {
+  result: {
+    /**
+     * Code indicating the preliminary result of the transaction, for example.
+     * `tesSUCCESS`.
+     */
+    engine_result: string
+    /**
+     * Numeric code indicating the preliminary result of the transaction,
+     * directly correlated to `engine_result`.
+     */
+    engine_result_code: number
+    /** Human-readable explanation of the preliminary transaction result. */
+    engine_result_message: string
+    /** The complete transaction in hex string format. */
+    tx_blob: string
+    /** The complete transaction in JSON format. */
+    tx_json: Transaction
+    /** Transaction hash (API v2+). */
     hash?: string
   }
 }
@@ -66,7 +59,22 @@ export interface SubmitMultisignedResponse extends BaseResponse {
  * @category ResponsesV1
  */
 export interface SubmitMultisignedV1Response extends BaseResponse {
-  result: BaseSubmitMultisignedResult & {
+  result: {
+    /**
+     * Code indicating the preliminary result of the transaction, for example.
+     * `tesSUCCESS`.
+     */
+    engine_result: string
+    /**
+     * Numeric code indicating the preliminary result of the transaction,
+     * directly correlated to `engine_result`.
+     */
+    engine_result_code: number
+    /** Human-readable explanation of the preliminary transaction result. */
+    engine_result_message: string
+    /** The complete transaction in hex string format. */
+    tx_blob: string
+    /** The complete transaction in JSON format with hash included. */
     tx_json: Transaction & { hash?: string }
   }
 }

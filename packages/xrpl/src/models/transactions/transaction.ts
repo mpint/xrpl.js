@@ -52,7 +52,7 @@ import { LoanDelete, validateLoanDelete } from './loanDelete'
 import { LoanManage, validateLoanManage } from './loanManage'
 import { LoanPay, validateLoanPay } from './loanPay'
 import { LoanSet, validateLoanSet } from './loanSet'
-import { TransactionMetadata } from './metadata'
+import { TransactionMetadataFor } from './metadata'
 import { MPTokenAuthorize, validateMPTokenAuthorize } from './MPTokenAuthorize'
 import {
   MPTokenIssuanceCreate,
@@ -244,7 +244,7 @@ export interface TransactionAndMetadata<
   T extends BaseTransaction = Transaction,
 > {
   transaction: T
-  metadata: TransactionMetadata<T>
+  metadata: TransactionMetadataFor<T>
 }
 
 /**
