@@ -92,7 +92,25 @@ export interface TransactionMetadataBase {
   ParentBatchID?: string
 }
 
-export type TransactionMetadata<T extends BaseTransaction = Transaction> =
+/**
+ * Union type of all transaction metadata types for schema generation compatibility.
+ */
+export type TransactionMetadata =
+  | PaymentMetadata
+  | NFTokenMintMetadata
+  | NFTokenCreateOfferMetadata
+  | NFTokenAcceptOfferMetadata
+  | NFTokenCancelOfferMetadata
+  | MPTokenIssuanceCreateMetadata
+  | TransactionMetadataBase
+
+/**
+ * Conditional type for mapping transaction types to their specific metadata types.
+ * Use this for typed usage when you know the specific transaction type.
+ *
+ * @internal
+ */
+export type TransactionMetadataFor<T extends BaseTransaction = Transaction> =
   T extends Payment
     ? PaymentMetadata
     : T extends NFTokenMint

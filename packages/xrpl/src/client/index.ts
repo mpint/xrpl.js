@@ -32,7 +32,7 @@ import {
   // ledger methods
   LedgerDataRequest,
   LedgerDataResponse,
-  TxResponse,
+  TypedTxResponse,
 } from '../models/methods'
 import type {
   RequestResponseMap,
@@ -856,7 +856,7 @@ class Client extends EventEmitter<EventTypes> {
       // A wallet to sign a transaction. It must be provided when submitting an unsigned transaction.
       wallet?: Wallet
     },
-  ): Promise<TxResponse<T>> {
+  ): Promise<TypedTxResponse<T>> {
     const signedTx = await getSignedTx(this, transaction, opts)
 
     const lastLedger = getLastLedgerSequence(signedTx)
