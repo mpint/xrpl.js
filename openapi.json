@@ -2207,6 +2207,10 @@
             "type": "string",
             "description": "The Address of a second account. If provided, show only lines of trust connecting the two accounts."
           },
+          "ignore_default": {
+            "type": "boolean",
+            "description": "If true, filter out trust lines with balances at their default values. The default is false."
+          },
           "limit": {
             "type": "number",
             "description": "Limit the number of trust lines to retrieve. The server is not required to honor this value. Must be within the inclusive range 10 to 400."
@@ -2336,6 +2340,10 @@
               },
               "marker": {
                 "description": "Server-defined value indicating the response is paginated. Pass this to the next call to resume where this call left off. Omitted when there are No additional pages after this one."
+              },
+              "limit": {
+                "type": "number",
+                "description": "The limit value used in the request."
               }
             },
             "required": [
@@ -2490,6 +2498,14 @@
                 "type": "number",
                 "description": "The ledger index of the current open ledger, which was used when retrieving this information."
               },
+              "ledger_hash": {
+                "type": "string",
+                "description": "The identifying hash of the ledger that was used to generate this response."
+              },
+              "ledger_index": {
+                "type": "number",
+                "description": "The ledger index of the ledger that was used to generate this response."
+              },
               "validated": {
                 "type": "boolean",
                 "description": "If true, this data comes from a validated ledger."
@@ -2504,9 +2520,7 @@
             },
             "required": [
               "account",
-              "account_nfts",
-              "ledger_current_index",
-              "validated"
+              "account_nfts"
             ],
             "additionalProperties": false
           },
@@ -54229,6 +54243,10 @@
           "asset2": {
             "$ref": "#/components/schemas/Currency",
             "description": "The other asset of the AMM pool."
+          },
+          "account": {
+            "type": "string",
+            "description": "The address of another account which holds LP Tokens for the requested AMM. If specified, the response includes a field for the amount of the specified account's LP Tokens."
           }
         },
         "required": [
@@ -54852,6 +54870,13 @@
           "nft_id": {
             "type": "string",
             "description": "The unique identifier of an NFToken. The request returns buy offers for this NFToken."
+          },
+          "limit": {
+            "type": "number",
+            "description": "Limit the number of NFT buy offers to retrieve. The server may return fewer results. Valid values are within 50-500. The default is 250."
+          },
+          "marker": {
+            "description": "Value from a previous paginated response. Resume retrieving data where that response left off."
           }
         },
         "required": [
@@ -54924,6 +54949,13 @@
               "nft_id": {
                 "type": "string",
                 "description": "The token ID of the NFToken to which these offers pertain."
+              },
+              "limit": {
+                "type": "number",
+                "description": "The limit value used in the request."
+              },
+              "marker": {
+                "description": "Server-defined value indicating the response is paginated. Pass this to the next call to resume where this call left off."
               }
             },
             "required": [
@@ -54993,6 +55025,13 @@
           "nft_id": {
             "type": "string",
             "description": "The unique identifier of an NFToken. The request returns sell offers for this NFToken."
+          },
+          "limit": {
+            "type": "number",
+            "description": "Limit the number of NFT sell offers to retrieve. The server may return fewer results. Valid values are within 50-500. The default is 250."
+          },
+          "marker": {
+            "description": "Value from a previous paginated response. Resume retrieving data where that response left off."
           }
         },
         "required": [
@@ -55034,6 +55073,13 @@
               "nft_id": {
                 "type": "string",
                 "description": "The token ID of the NFToken to which these offers pertain."
+              },
+              "limit": {
+                "type": "number",
+                "description": "The limit value used in the request."
+              },
+              "marker": {
+                "description": "Server-defined value indicating the response is paginated. Pass this to the next call to resume where this call left off."
               }
             },
             "required": [
@@ -67134,6 +67180,10 @@
               "ledger_index": {
                 "type": "number",
                 "description": "The ledger index of the ledger version that was used to generate this response."
+              },
+              "ledger_current_index": {
+                "type": "number",
+                "description": "The ledger index of the current in-progress ledger, which was used when retrieving this information. May be omitted."
               },
               "validated": {
                 "type": "boolean",
