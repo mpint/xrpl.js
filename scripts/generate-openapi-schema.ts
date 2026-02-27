@@ -6,7 +6,7 @@
  * 1. Using ts-json-schema-generator to extract JSON schemas from TypeScript types
  * 2. Transforming JSON Schema Draft-07 to OpenAPI 3.0.3 format
  * 3. Creating separate paths for each method
- * 4. Supporting only API v2 (not v1 or v3)
+ * 4. Supporting only API v2 (not v1)
  */
 
 import * as fs from "fs";
@@ -34,6 +34,7 @@ interface OpenAPISchema {
     url: string;
     description: string;
   }>;
+  security: Array<Record<string, any>>;
   paths: Record<string, any>;
   components: {
     schemas: Record<string, any>;
@@ -58,9 +59,9 @@ function transformToOpenAPI(schema: any): any {
   // Transform $ref from JSON Schema to OpenAPI format
   if (schema.$ref) {
     // Convert #/definitions/TypeName to #/components/schemas/TypeName
-    result.$ref = schema.$ref.replace(
-      "#/definitions/",
-      "#/components/schemas/",
+    // and sanitize the schema name to comply with OpenAPI naming requirements
+    result.$ref = sanitizeRef(
+      schema.$ref.replace("#/definitions/", "#/components/schemas/"),
     );
     // If there are other properties (like description), copy them too
     for (const key of Object.keys(schema)) {
@@ -155,6 +156,34 @@ function transformToOpenAPI(schema: any): any {
 }
 
 /**
+ * Sanitize schema names to comply with OpenAPI 3.0.3 naming requirements.
+ * OpenAPI schema names must match: ^[a-zA-Z0-9\.\-_]+$
+ *
+ * This handles TypeScript generic types like "AccountTxTransaction<2>"
+ * by converting them to valid names like "AccountTxTransaction_2"
+ */
+function sanitizeSchemaName(name: string): string {
+  // Replace angle brackets with underscores (e.g., Type<2> -> Type_2)
+  // Remove any other invalid characters
+  return name.replace(/<(\d+)>/g, "_$1").replace(/[^a-zA-Z0-9._-]/g, "_");
+}
+
+/**
+ * Update $ref paths to use sanitized schema names
+ */
+function sanitizeRef(ref: string): string {
+  if (ref.startsWith("#/components/schemas/")) {
+    const schemaName = ref.substring("#/components/schemas/".length);
+    return `#/components/schemas/${sanitizeSchemaName(schemaName)}`;
+  }
+  if (ref.startsWith("#/definitions/")) {
+    const schemaName = ref.substring("#/definitions/".length);
+    return `#/definitions/${sanitizeSchemaName(schemaName)}`;
+  }
+  return ref;
+}
+
+/**
  * Generate schema for a specific type and collect all definitions
  */
 function generateSchemaForType(
@@ -172,8 +201,10 @@ function generateSchemaForType(
     // Extract definitions if present and add them to allSchemas
     if (schema.definitions) {
       for (const [defName, defSchema] of Object.entries(schema.definitions)) {
-        if (!allSchemas[defName]) {
-          allSchemas[defName] = transformToOpenAPI(defSchema);
+        // Sanitize the schema name to comply with OpenAPI naming requirements
+        const sanitizedName = sanitizeSchemaName(defName);
+        if (!allSchemas[sanitizedName]) {
+          allSchemas[sanitizedName] = transformToOpenAPI(defSchema);
         }
       }
 
@@ -528,6 +559,7 @@ async function generateOpenAPISchema(): Promise<void> {
         description: "Devnet",
       },
     ],
+    security: [],
     paths: {},
     components: {
       schemas: {},

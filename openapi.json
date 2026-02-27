@@ -19,6 +19,7 @@
       "description": "Devnet"
     }
   ],
+  "security": [],
   "paths": {
     "/account_channels": {
       "post": {
@@ -5088,7 +5089,7 @@
         "additionalProperties": false,
         "description": "The account_tx method retrieves a list of transactions that involved the specified account. Expects a response in the form of a  {@link  * AccountTxResponse } ."
       },
-      "AccountTxTransaction<2>": {
+      "AccountTxTransaction_2": {
         "type": "object",
         "properties": {
           "ledger_index": {
@@ -22802,7 +22803,7 @@
               "transactions": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/components/schemas/AccountTxTransaction<2>"
+                  "$ref": "#/components/schemas/AccountTxTransaction_2"
                 },
                 "description": "Array of transactions matching the request's criteria, as explained below."
               },
