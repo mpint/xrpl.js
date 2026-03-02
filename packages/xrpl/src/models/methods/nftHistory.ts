@@ -1,7 +1,13 @@
 import { ResponseOnlyTxInfo } from '../common'
 import { Transaction, TransactionMetadata } from '../transactions'
 
-import { BaseRequest, BaseResponse, LookupByLedgerRequest } from './baseMethod'
+import {
+  BaseRequest,
+  BaseResponse,
+  LookupByLedgerRequest,
+  PaginationRequest,
+  PaginationResponse,
+} from './baseMethod'
 
 /**
  * The nft_history method retrieves a list of transactions that involved the
@@ -10,7 +16,8 @@ import { BaseRequest, BaseResponse, LookupByLedgerRequest } from './baseMethod'
  *
  * @category Requests
  */
-export interface NFTHistoryRequest extends BaseRequest, LookupByLedgerRequest {
+export interface NFTHistoryRequest
+  extends BaseRequest, LookupByLedgerRequest, PaginationRequest {
   command: 'nft_history'
   /**
    * The unique identifier of an NFToken.
@@ -38,17 +45,6 @@ export interface NFTHistoryRequest extends BaseRequest, LookupByLedgerRequest {
    * the results are indexed with the newest ledger first.
    */
   forward?: boolean
-  /**
-   * Default varies. Limit the number of transactions to retrieve. The server
-   * is not required to honor this value.
-   */
-  limit?: number
-  /**
-   * Value from a previous paginated response. Resume retrieving data where
-   * that response left off. This value is stable even if there is a change in
-   * the server's range of available ledgers.
-   */
-  marker?: unknown
 }
 
 export interface NFTHistoryTransaction {
@@ -91,13 +87,6 @@ export interface NFTHistoryResponse extends BaseResponse {
      * transactions.
      */
     ledger_index_max: number
-    /** The limit value used in the request. */
-    limit?: number
-    /**
-     * Server-defined value indicating the response is paginated. Pass this
-     * to the next call to resume where this call left off.
-     */
-    marker?: unknown
     /**
      * Array of transactions matching the request's criteria, as explained
      * below.
@@ -109,5 +98,5 @@ export interface NFTHistoryResponse extends BaseResponse {
      * change.
      */
     validated?: boolean
-  }
+  } & PaginationResponse
 }
