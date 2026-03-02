@@ -1,4 +1,10 @@
-import { BaseRequest, BaseResponse, LookupByLedgerRequest } from './baseMethod'
+import {
+  BaseRequest,
+  BaseResponse,
+  LookupByLedgerRequest,
+  PaginationRequest,
+  PaginationResponse,
+} from './baseMethod'
 
 /**
  * The `account_nfts` method retrieves all of the NFTs currently owned by the
@@ -6,22 +12,14 @@ import { BaseRequest, BaseResponse, LookupByLedgerRequest } from './baseMethod'
  *
  * @category Requests
  */
-export interface AccountNFTsRequest extends BaseRequest, LookupByLedgerRequest {
+export interface AccountNFTsRequest
+  extends BaseRequest, LookupByLedgerRequest, PaginationRequest {
   command: 'account_nfts'
   /**
    * The unique identifier of an account, typically the account's address. The
    * request returns NFTs owned by this account.
    */
   account: string
-  /**
-   * Limit the number of NFTokens to retrieve.
-   */
-  limit?: number
-  /**
-   * Value from a previous paginated response. Resume retrieving data where
-   * that response left off.
-   */
-  marker?: unknown
 }
 
 /**
@@ -60,13 +58,5 @@ export interface AccountNFTsResponse extends BaseResponse {
     ledger_current_index: number
     /** If true, this data comes from a validated ledger. */
     validated: boolean
-    /**
-     * Server-defined value indicating the response is paginated. Pass this to
-     * the next call to resume where this call left off. Omitted when there are
-     * No additional pages after this one.
-     */
-    marker?: unknown
-    /** The limit that was used to fulfill this request. */
-    limit?: number
-  }
+  } & PaginationResponse
 }
