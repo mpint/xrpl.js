@@ -1,4 +1,10 @@
-import { BaseRequest, BaseResponse, LookupByLedgerRequest } from './baseMethod'
+import {
+  BaseRequest,
+  BaseResponse,
+  LookupByLedgerRequest,
+  PaginationRequest,
+  PaginationResponse,
+} from './baseMethod'
 
 export interface AccountLinesTrustline {
   /** The unique Address of the counterparty to this trust line. */
@@ -73,7 +79,7 @@ export interface AccountLinesTrustline {
  * @category Requests
  */
 export interface AccountLinesRequest
-  extends BaseRequest, LookupByLedgerRequest {
+  extends BaseRequest, LookupByLedgerRequest, PaginationRequest {
   command: 'account_lines'
   /** A unique identifier for the account, most commonly the account's Address. */
   account: string
@@ -82,16 +88,6 @@ export interface AccountLinesRequest
    * connecting the two accounts.
    */
   peer?: string
-  /**
-   * Limit the number of trust lines to retrieve. The server is not required to
-   * honor this value. Must be within the inclusive range 10 to 400.
-   */
-  limit?: number
-  /**
-   * Value from a previous paginated response. Resume retrieving data where
-   * that response left off.
-   */
-  marker?: unknown
 }
 
 /**
@@ -126,11 +122,5 @@ export interface AccountLinesResponse extends BaseResponse {
      * this data.
      */
     ledger_hash?: string
-    /**
-     * Server-defined value indicating the response is paginated. Pass this to
-     * the next call to resume where this call left off. Omitted when there are
-     * No additional pages after this one.
-     */
-    marker?: unknown
-  }
+  } & PaginationResponse
 }
