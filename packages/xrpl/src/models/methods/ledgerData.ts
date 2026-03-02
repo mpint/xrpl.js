@@ -1,6 +1,12 @@
 import { LedgerEntry, LedgerEntryFilter } from '../ledger'
 
-import { BaseRequest, BaseResponse, LookupByLedgerRequest } from './baseMethod'
+import {
+  BaseRequest,
+  BaseResponse,
+  LookupByLedgerRequest,
+  PaginationRequest,
+  PaginationResponse,
+} from './baseMethod'
 
 /**
  * The `ledger_data` method retrieves contents of the specified ledger. You can
@@ -20,23 +26,14 @@ import { BaseRequest, BaseResponse, LookupByLedgerRequest } from './baseMethod'
  *
  * @category Requests
  */
-export interface LedgerDataRequest extends BaseRequest, LookupByLedgerRequest {
+export interface LedgerDataRequest
+  extends BaseRequest, LookupByLedgerRequest, PaginationRequest {
   command: 'ledger_data'
   /**
    * If set to true, return ledger objects as hashed hex strings instead of
    * JSON.
    */
   binary?: boolean
-  /**
-   * Limit the number of ledger objects to retrieve. The server is not required
-   * to honor this value.
-   */
-  limit?: number
-  /**
-   * Value from a previous paginated response. Resume retrieving data where
-   * that response left off.
-   */
-  marker?: unknown
   /**
    * If included, filter results to include only this type of ledger object.
    */
@@ -72,11 +69,6 @@ export interface LedgerDataResponse extends BaseResponse {
      * as defined below.
      */
     state: LedgerDataLedgerState[]
-    /**
-     * Server-defined value indicating the response is paginated. Pass this to
-     * the next call to resume where this call left off.
-     */
-    marker?: unknown
     validated?: boolean
-  }
+  } & PaginationResponse
 }
