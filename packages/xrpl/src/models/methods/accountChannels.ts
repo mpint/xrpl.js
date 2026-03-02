@@ -1,4 +1,10 @@
-import { BaseRequest, BaseResponse, LookupByLedgerRequest } from './baseMethod'
+import {
+  BaseRequest,
+  BaseResponse,
+  LookupByLedgerRequest,
+  PaginationRequest,
+  PaginationResponse,
+} from './baseMethod'
 
 /**
  * Represents a payment channel in the XRP Ledger.
@@ -88,7 +94,7 @@ export interface Channel {
  * @category Requests
  */
 export interface AccountChannelsRequest
-  extends BaseRequest, LookupByLedgerRequest {
+  extends BaseRequest, LookupByLedgerRequest, PaginationRequest {
   command: 'account_channels'
   /**
    * The unique identifier of an account, typically the account's address. The
@@ -102,16 +108,6 @@ export interface AccountChannelsRequest
    * account.
    */
   destination_account?: string
-  /**
-   * Limit the number of transactions to retrieve. Cannot be less than 10 or
-   * more than 400. The default is 200.
-   */
-  limit?: number
-  /**
-   * Value from a previous paginated response. Resume retrieving data where
-   * that response left off.
-   */
-  marker?: unknown
 }
 
 /**
@@ -140,16 +136,5 @@ export interface AccountChannelsResponse extends BaseResponse {
      * version. Otherwise, the information is subject to change.
      */
     validated?: boolean
-    /**
-     * The limit to how many channel objects were actually returned by this
-     * request.
-     */
-    limit?: number
-    /**
-     * Server-defined value for pagination. Pass this to the next call to
-     * resume getting results where this call left off. Omitted when there are
-     * no additional pages after this one.
-     */
-    marker?: unknown
-  }
+  } & PaginationResponse
 }
