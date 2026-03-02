@@ -23,6 +23,18 @@ export interface LookupByLedgerRequest {
   ledger_index?: LedgerIndex
 }
 
+export interface PaginationRequest {
+  /** Limit the number of results to retrieve. */
+  limit?: number
+  /** Value from a previous paginated response. Resume retrieving data where that response left off. */
+  marker?: unknown
+}
+
+export interface PaginationResponse {
+  marker?: unknown
+  limit?: number
+}
+
 export interface ResponseWarning {
   id: number
   message: string
