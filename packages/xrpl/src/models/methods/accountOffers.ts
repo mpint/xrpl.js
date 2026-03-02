@@ -1,6 +1,12 @@
 import { Amount } from '../common'
 
-import { BaseRequest, BaseResponse, LookupByLedgerRequest } from './baseMethod'
+import {
+  BaseRequest,
+  BaseResponse,
+  LookupByLedgerRequest,
+  PaginationRequest,
+  PaginationResponse,
+} from './baseMethod'
 
 /**
  * The account_offers method retrieves a list of offers made by a given account
@@ -10,20 +16,10 @@ import { BaseRequest, BaseResponse, LookupByLedgerRequest } from './baseMethod'
  * @category Requests
  */
 export interface AccountOffersRequest
-  extends BaseRequest, LookupByLedgerRequest {
+  extends BaseRequest, LookupByLedgerRequest, PaginationRequest {
   command: 'account_offers'
   /** A unique identifier for the account, most commonly the account's Address. */
   account: string
-  /**
-   * Limit the number of transactions to retrieve. The server is not required
-   * to honor this value. Must be within the inclusive range 10 to 400.
-   */
-  limit?: number
-  /**
-   * Value from a previous paginated response. Resume retrieving data where
-   * that response left off.
-   */
-  marker?: unknown
   /**
    * If true, then the account field only accepts a public key or XRP Ledger
    * address. Otherwise, account can be a secret or passphrase (not
@@ -89,11 +85,5 @@ export interface AccountOffersResponse extends BaseResponse {
      * this data.
      */
     ledger_hash?: string
-    /**
-     * Server-defined value indicating the response is paginated. Pass this to
-     * the next call to resume where this call left off. Omitted when there are
-     * no pages of information after this one.
-     */
-    marker?: unknown
-  }
+  } & PaginationResponse
 }
