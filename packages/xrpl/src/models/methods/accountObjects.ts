@@ -1,7 +1,13 @@
 import { Amendments, FeeSettings, LedgerHashes } from '../ledger'
 import { LedgerEntry, LedgerEntryFilter } from '../ledger/LedgerEntry'
 
-import { BaseRequest, BaseResponse, LookupByLedgerRequest } from './baseMethod'
+import {
+  BaseRequest,
+  BaseResponse,
+  LookupByLedgerRequest,
+  PaginationRequest,
+  PaginationResponse,
+} from './baseMethod'
 
 export type AccountObjectType = Exclude<
   LedgerEntryFilter,
@@ -16,7 +22,7 @@ export type AccountObjectType = Exclude<
  * @category Requests
  */
 export interface AccountObjectsRequest
-  extends BaseRequest, LookupByLedgerRequest {
+  extends BaseRequest, LookupByLedgerRequest, PaginationRequest {
   command: 'account_objects'
   /** A unique identifier for the account, most commonly the account's address. */
   account: string
@@ -29,16 +35,6 @@ export interface AccountObjectsRequest
    * from being deleted. The default is false.
    */
   deletion_blockers_only?: boolean
-  /**
-   * The maximum number of objects to include in the results. Must be within
-   * the inclusive range 10 to 400 on non-admin connections. The default is 200.
-   */
-  limit?: number
-  /**
-   * Value from a previous paginated response. Resume retrieving data where
-   * that response left off.
-   */
-  marker?: unknown
 }
 
 /**
@@ -79,19 +75,11 @@ export interface AccountObjectsResponse extends BaseResponse {
      * used to generate this response.
      */
     ledger_current_index?: number
-    /** The limit that was used in this request, if any. */
-    limit?: number
-    /**
-     * Server-defined value indicating the response is paginated. Pass this to
-     * the next call to resume where this call left off. Omitted when there are
-     * no additional pages after this one.
-     */
-    marker?: string
     /**
      * If included and set to true, the information in this response comes from
      * a validated ledger version. Otherwise, the information is subject to
      * change.
      */
     validated?: boolean
-  }
+  } & PaginationResponse
 }
